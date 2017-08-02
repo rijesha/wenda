@@ -58,7 +58,7 @@ D BaseMessage::interpolateVar(long int time, long int t1, long int t2, D y1, D y
 
 template <class D>
 D BaseMessage::getRate(long int t1, long int t2, D y1, D y2) {
-  return (D) (y2-y1)/(t2-t1);
+  return (D) ((y2-y1)/(t2-t1))*1000;
 }
 /*
 template <class D>
