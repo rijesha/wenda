@@ -176,6 +176,7 @@ int folderMonitoring(string monitorFolder)
       if ( event->len ) {
         string dataFileName(event->name, 30);
         dataFileName = dataFileName.substr(0, dataFileName.find(".")).append(".txt");
+        dataFileName.insert(0,"/");
         dataFileName.insert(0,monitorFolder);
         
         ofstream dataFile(dataFileName, ofstream::out);
