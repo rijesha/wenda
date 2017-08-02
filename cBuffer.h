@@ -8,6 +8,8 @@
 #include <string>
 #include <stdexcept>
 #include <cmath>
+#include <mutex>              
+#include <condition_variable> 
 
 using namespace std;
 
@@ -21,6 +23,8 @@ class CircularBuffer
     bool full;
     uint incrementIndex(uint ind);
     uint deincrementIndex(uint ind);
+    mutex mtx;
+    condition_variable newDataAvailable;
 
   public:
     CircularBuffer<T>(uint length);
@@ -63,6 +67,7 @@ void CircularBuffer<T>::push(T const &elem) {
       ind = incrementIndex(ind);
       elements[ind] = elem;
     }
+    newDataAvailable.notify_all();
 }
 
 template <class T>
@@ -113,12 +118,18 @@ vector<T> CircularBuffer<T>::getThree(long int time) {
 
     vector<T> v;
 
-
     v.push_back(elements[deincrementIndex(foundInd)]);
     v.push_back(elements[foundInd]);
     v.push_back(elements[incrementIndex(foundInd)]);
+
+    if (v[1].time > v[2].time) {
+      std::unique_lock<std::mutex> lk(mtx);
+      newDataAvailable.wait(lk);
+      v[2] = elements[incrementIndex(foundInd)];
+    }
+
     #ifdef DEBUG_INTERPOLATION 
-      cout << v[0] << v[1] << v[2] << endl;
+      cout << v[0].time << " " << v[1].time << " " << v[2].time << " " << endl;
     #endif
     return v;
 }
