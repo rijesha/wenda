@@ -14,20 +14,20 @@
 #include <chrono>
 #include <cstring>
 
+using namespace std;
+
 CircularBuffer<WaldoMessage> wmBuffer((uint) BUFFER_SIZE*WALDO_MSG_FREQ);
 CircularBuffer<GpsMessage> gmBuffer((uint) BUFFER_SIZE*GPS_MSG_FREQ);
-
-using namespace std;
 
 #define EVENT_SIZE  ( sizeof (struct inotify_event) )
 #define BUF_LEN     ( 1024 * ( EVENT_SIZE + 16 ) )
 
 
-std::ofstream logFile;
+ofstream logFile;
 
 long int getCurrentTime(){
-  auto now_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
-  long int ms = std::chrono::duration_cast<std::chrono::milliseconds>(now_ms.time_since_epoch()).count();
+  auto now_ms = chrono::time_point_cast<chrono::milliseconds>(chrono::system_clock::now());
+  long int ms = chrono::duration_cast<chrono::milliseconds>(now_ms.time_since_epoch()).count();
   return ms;
 }
 
@@ -51,7 +51,7 @@ int waitForDataReady(){
     if (count == 10)
       cout << "Waiting for Data Buffer to fill" << endl;
     count--;
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    this_thread::sleep_for(chrono::milliseconds(1000));
     if (count < 0) {
       cout << "Failed To fill Data Buffer" << endl;
       return 1;
@@ -139,7 +139,7 @@ bool openLogFile(){
          << (now->tm_mon + 1) << '-'
          <<  now->tm_mday
          << endl;
-  logFile.open(std::to_string(getCurrentTime()));
+  logFile.open(to_string(getCurrentTime()));
   return logFile.is_open();
 }
 
@@ -158,7 +158,7 @@ int folderMonitoring(string monitorFolder)
   if ( fd < 0 ) {
     perror( "inotify_init" );
   }
-  int wd = inotify_add_watch( fd, monitorFolder.c_str() , IN_CREATE);
+  inotify_add_watch( fd, monitorFolder.c_str() , IN_CREATE);
     
   while (1) {
     int i = 0;
@@ -194,7 +194,7 @@ int folderMonitoring(string monitorFolder)
 int main(int argc, char *argv[]) {
   cout << "Program Started" << endl;
   
-  std::string monitorFolder;
+  string monitorFolder;
   if (argc > 1)
   {
     monitorFolder = argv[1];
@@ -202,7 +202,7 @@ int main(int argc, char *argv[]) {
 
   initAutopilotDataReading();
 
-  std::thread t1(standaloneRunner);
+  thread t1(standaloneRunner);
   cout << "Started Autopilot Parsing Thread" << endl;
   t1.detach();
   while (waitForDataReady() == 1);
