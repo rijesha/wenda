@@ -7,11 +7,9 @@ CSOURCES = $(wildcard *.c pprzlink/*.c )
 CPPSOURCES += $(wildcard *.cpp)
 
 OBJECTS = $(CSOURCES:.c=.o) $(CPPSOURCES:.cpp=.o)
-EXECUTABLE = pprzlink-integration
+EXECUTABLE = wenda
 CFLAGS = -c -Wall -g -I$(INC_DIR) -g -DSTANDALONE
 LIBS =
-
-
 
 
 # Targets

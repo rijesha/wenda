@@ -13,4 +13,5 @@ extern CircularBuffer<GpsMessage> gmBuffer;
 
 extern std::ofstream logFile;
 
+
 #endif
