@@ -19,6 +19,8 @@ using namespace std;
 CircularBuffer<WaldoMessage> wmBuffer((uint) BUFFER_SIZE*WALDO_MSG_FREQ);
 CircularBuffer<GpsMessage> gmBuffer((uint) BUFFER_SIZE*GPS_MSG_FREQ);
 
+string logFileFolder;
+
 #define EVENT_SIZE  ( sizeof (struct inotify_event) )
 #define BUF_LEN     ( 1024 * ( EVENT_SIZE + 16 ) )
 
@@ -134,12 +136,13 @@ const char *strAutopilotError(int error_number){
 
 bool openLogFile(){
   time_t t = time(0);   // get time now
-    struct tm * now = localtime( & t );
-    cout << (now->tm_year + 1900) << '-' 
-         << (now->tm_mon + 1) << '-'
-         <<  now->tm_mday
-         << endl;
-  logFile.open(to_string(getCurrentTime()));
+  struct tm * now = localtime( & t );
+  cout << (now->tm_year + 1900) << '-' 
+       << (now->tm_mon + 1) << '-'
+       <<  now->tm_mday
+       << endl;
+  
+  logFile.open(logFileFolder.append(to_string(getCurrentTime())));
   return logFile.is_open();
 }
 
@@ -176,7 +179,6 @@ int folderMonitoring(string monitorFolder)
       if ( event->len ) {
         string dataFileName(event->name, 30);
         dataFileName = dataFileName.substr(0, dataFileName.find(".")).append(".txt");
-        dataFileName.insert(0,"/");
         dataFileName.insert(0,monitorFolder);
         
         ofstream dataFile(dataFileName, ofstream::out);
@@ -198,6 +200,8 @@ int main(int argc, char *argv[]) {
   if (argc > 1)
   {
     monitorFolder = argv[1];
+    monitorFolder.append("/");
+    logFileFolder = monitorFolder;
   }
 
   initAutopilotDataReading();
