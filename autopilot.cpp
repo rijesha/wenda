@@ -33,7 +33,7 @@ long int getCurrentTime(){
 
 int initAutopilotDataReading(){
   #ifdef LOG_PARSED_MESSAGES
-  if (!openFile()){
+  if (!openLogFile()){
     cout << "Failed to open parsed messages log file" << endl;
   }
   #endif
@@ -132,7 +132,7 @@ const char *strAutopilotError(int error_number){
 }
 
 
-bool openFile(){
+bool openLogFile(){
   time_t t = time(0);   // get time now
     struct tm * now = localtime( & t );
     cout << (now->tm_year + 1900) << '-' 
@@ -162,9 +162,8 @@ int folderMonitoring(string monitorFolder)
     
   while (1) {
     int i = 0;
-
-    
     memset(buffer, 0, BUF_LEN);
+    
     int length = read( fd, buffer, BUF_LEN );
     getInterpolatedData(getCurrentTime());
 
@@ -175,15 +174,14 @@ int folderMonitoring(string monitorFolder)
     while ( i < length ) {
       struct inotify_event *event = ( struct inotify_event * ) &buffer[ i ];
       if ( event->len ) {
-        string s(event->name, 30);
-        s = s.substr(0, s.find(".")).append(".txt");
-        s.insert(0,monitorFolder);
+        string dataFileName(event->name, 30);
+        dataFileName = dataFileName.substr(0, dataFileName.find(".")).append(".txt");
+        dataFileName.insert(0,monitorFolder);
         
-        ofstream outfile(s, ofstream::out);
-        outfile << text_file_string_buffer;
-        outfile.close();
+        ofstream dataFile(dataFileName, ofstream::out);
+        dataFile << text_file_string_buffer;
+        dataFile.close();
 
-        cout << s << endl;
       }
       i += EVENT_SIZE + event->len;
     } 
@@ -194,6 +192,7 @@ int folderMonitoring(string monitorFolder)
 
 int main(int argc, char *argv[]) {
   cout << "Program Started" << endl;
+  
   std::string monitorFolder;
   if (argc > 1)
   {
@@ -210,17 +209,6 @@ int main(int argc, char *argv[]) {
   cout << monitorFolder << endl;
   folderMonitoring(monitorFolder);
   
-
-  int loop = 0;
-  while (loop < 10){
-    auto now_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
-    long int ms = std::chrono::duration_cast<std::chrono::milliseconds>(now_ms.time_since_epoch()).count();
-    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-    getInterpolatedData(ms);
-    cout << text_file_string_buffer;
-    loop++;
-  }
-  cleanupAutopilotDataReading();
   return 0;
 }
 

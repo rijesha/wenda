@@ -14,7 +14,7 @@ void getInterpolatedData(long int time);
 int initAutopilotDataReading();
 void autopilotThreadRunner();
 int waitForDataReady();
-bool openFile();
+bool openLogFile();
 
 float getSpeed();
 float getHeight();

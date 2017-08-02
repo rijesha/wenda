@@ -19,7 +19,8 @@
 //#define DEBUG_INTERPOLATION
 //#define PRINT_RAW_DATA
 #define AUTOPILOT_TESTING 1
-#define AUTOPILOT_INPUT_TERMINAL "waldo_msg.log"
+//#define AUTOPILOT_INPUT_TERMINAL "waldo_msg.log"
+#define AUTOPILOT_INPUT_TERMINAL "/dev/ttyS1"
 
 #define BAUD_RATE 57600
 
