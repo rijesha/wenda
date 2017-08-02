@@ -77,6 +77,27 @@ void getInterpolatedData(long int time){
   #endif
 }
 
+string getInterpolatedDataString(long int time){
+  WaldoMessage wm = wmBuffer.getInterpolated(time); 
+  #ifdef USE_GPS
+    GpsMessage gm = gmBuffer.getInterpolated(time);
+    wm.utm_east = gm.utm_east;
+    wm.utm_north = gm.utm_north;
+    wm.utm_zone = gm.utm_zone;
+    wm.week = gm.week;
+    wm.itow = gm.itow;
+    wm.speed = gm.speed;
+    wm.alt = gm.alt;
+    wm.alt_rate = gm.alt_rate;
+  #endif
+
+  #ifdef PRINT_REQUESTED_INTERPOLATED
+    cout << wm.getFileString().str();
+  #endif
+
+  return wm.getFileString().str();
+}
+
 float getHeight(){
   return wmBuffer.getLastDataPoint().est_height;
 }

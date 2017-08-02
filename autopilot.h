@@ -3,9 +3,11 @@
 #define AUTOPILOT_H
 
 #include "configuration.h"
-char text_file_string_buffer[TEXT_BUFFER_LENGTH];
+
 
 #ifdef __cplusplus
+#include <string>
+using namespace std;
   extern "C" {
 #endif
 
@@ -28,8 +30,10 @@ float getRoll();
 void cleanupAutopilotDataReading();
 
 const char *strAutopilotError(int error_number);
+char text_file_string_buffer[TEXT_BUFFER_LENGTH];
 
 #ifdef __cplusplus
+string getInterpolatedDataString(long int time);
 }
 #endif
 

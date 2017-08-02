@@ -32,9 +32,8 @@ int folderMonitoring(string monitorFolder)
   while (1) {
     int i = 0;
     memset(buffer, 0, BUF_LEN);
-    
+    long int time = getCurrentTime();
     int length = read( fd, buffer, BUF_LEN );
-    getInterpolatedData(getCurrentTime());
 
     if ( length < 0 ) {
       perror( "read" );
@@ -48,7 +47,7 @@ int folderMonitoring(string monitorFolder)
         dataFileName.insert(0,monitorFolder);
         
         ofstream dataFile(dataFileName, ofstream::out);
-        dataFile << text_file_string_buffer;
+        dataFile << getInterpolatedDataString(time);
         dataFile.close();
 
       }
